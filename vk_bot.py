@@ -118,22 +118,23 @@ def write_chat_msg(chat_id, s):
 domains = ['.ru', '.com', '.net', 'http', 'www', '.org']
 
 briefing_told = False
-
+print "Bot is working"
 while True:
     try:
         curr_hour = int(time.strftime("%H"))
         curr_min = int(time.strftime("%M"))
-        if curr_hour == 19 and curr_min == 0 and not briefing_told:
-            write_chat_msg(46,"~Тестовый режим~\n"+get_brief())
+        if curr_hour == 21 and curr_min == 0 and not briefing_told:
+            write_chat_msg(46,u"~Тестовый режим~\n"+get_brief())
             briefing_told = True
-        elif curr_hour != 19 and curr_min != 0:
+        elif curr_hour != 21 and curr_min != 0:
             briefing_told = False
         response = vk.method('messages.get', VALUES)
         if response['items']:
             VALUES['last_message_id'] = response['items'][0]['id']
         for item in response['items']:
             message_text = item[u'body'].lower()
-            print str(item[u'user_id']) + ': ' + item[u'body']
+            user = vk.method('users.get', {'user_ids':item[u'user_id']})[0]
+            print "New message from: " + user[u'first_name'] + ' ' + user[u'last_name']      
             if message_text == u'#брифинг':
                 write_msg(item[u'user_id'], get_brief())
             elif item[u'user_id'] == 91114313:
