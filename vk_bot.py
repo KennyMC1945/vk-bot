@@ -88,13 +88,13 @@ BRIEF = {
 def get_brief():
     # Проверяет день и час запроса
     weekday_now = int(time.strftime("%w"))
-    top_or_bot_week = (int(time.strftime("%W")) - 5)%2 # 1 - Верхняя, 0 - Нижняя
+    top_week = (int(time.strftime("%W")) - 5)%2 # 1 - Верхняя, 0 - Нижняя
     hour = int(time.strftime("%H"))
     if weekday_now == 0 and hour > 15: 
-        if top_or_bot_week == 1:
-            top_or_bot_week = 0
+        if top_week:
+            top_week = 0
         else:
-            top_or_bot_week = 1     
+            top_week = 1     
     if weekday_now == 6 and hour > 15:
         next_day = 'Sun'
     elif hour > 15:
@@ -103,7 +103,7 @@ def get_brief():
         next_day = DAYS[str(weekday_now)]
     else: 
         return u"Еще рановато"
-    if top_or_bot_week:
+    if top_week:
         next_day += 'T'
     else:
         next_day += 'B'
