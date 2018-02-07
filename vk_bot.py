@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import time
-#import codecs
 from subprocess import call
 import vk_api
 
@@ -9,6 +8,7 @@ def auth_handler():
     key = input("Input a sms-code: ")
     remember_device = True
     return key, remember_device
+
 try:
     vk = vk_api.VkApi(login = '89859639002', auth_handler = auth_handler)
     vk.auth()
@@ -88,7 +88,7 @@ BRIEF = {
 def get_brief():
     # Проверяет день и час запроса
     weekday_now = int(time.strftime("%w"))
-    top_week = (int(time.strftime("%W")) - 5)%2 # 1 - Верхняя, 0 - Нижняя
+    top_week = (int(time.strftime("%W")) - 5)%2 # True(1) - Верхняя,False(0) - Нижняя
     hour = int(time.strftime("%H"))
     if weekday_now == 0 and hour > 15: 
         if top_week:
@@ -99,17 +99,26 @@ def get_brief():
         next_day = 'Sun'
     elif hour > 15:
         next_day = DAYS[str(weekday_now+1)]
-    elif hour < 9:
+    else:
         next_day = DAYS[str(weekday_now)]
-    else: 
-        return u"Еще рановато"
     if top_week:
         next_day += 'T'
     else:
         next_day += 'B'
     return u'Брифинг на завтра: ' + BRIEF[next_day]
 
-VALUES = {'out': 1, 'count': 3, 'time_offset': 15}
+
+
+
+def msg_notify(item):
+    user = vk.method('users.get', {'user_ids':item[u'user_id']})[0]
+    print "New message from: " + user[u'first_name'] + ' ' + user[u'last_name'] 
+
+def is_link(msg):
+    for domain in domains:
+        if domain in msg:
+            return True
+    return False
 
 def write_msg(user_id, s):
     vk.method('messages.send', {'user_id':user_id,'message':s})
@@ -119,31 +128,31 @@ def write_chat_msg(chat_id, s):
 domains = ['.ru', '.com', '.net', 'http', 'www', '.org']
 
 briefing_told = False
+notify = False
+
+# main loop
 print "Bot is working"
+
+VALUES = {'out': 1, 'count': 3, 'time_offset': 15} # настройки прочтения
+
 while True:
     try:
-        curr_hour = int(time.strftime("%H"))
-        curr_min = int(time.strftime("%M"))
-        if curr_hour == 21 and curr_min == 0 and not briefing_told:
+        time.sleep(10)
+        curr_time = time.strftime("%H:%M")
+        if curr_time == "21:00":
             write_chat_msg(46,u"~Тестовый режим~\n"+get_brief())
-            briefing_told = True
-        elif curr_hour != 21 and curr_min != 0:
-            briefing_told = False
+            time.sleep(50)
         response = vk.method('messages.get', VALUES)
         if response['items']:
             VALUES['last_message_id'] = response['items'][0]['id']
         for item in response['items']:
             message_text = item[u'body'].lower()
-            user = vk.method('users.get', {'user_ids':item[u'user_id']})[0]
-            print "New message from: " + user[u'first_name'] + ' ' + user[u'last_name']      
+            if notify:
+                msg_notify(item)      
             if message_text == u'#брифинг':
                 write_msg(item[u'user_id'], get_brief())
-            elif item[u'user_id'] == 91114313:
-                for domain in domains:
-                    if domain in message_text:
-                        call(["firefox", message_text])
-                        break
-        time.sleep(10)
+            if item[u'user_id'] == 91114313 and is_link(message_text):
+                call(["firefox", message_text])
     except vk_api.exceptions.ApiHttpError:
         print "Http Error: Gateway Timeout\nTrying to Reconnect...\n"
         vk.auth()
