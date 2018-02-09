@@ -10,11 +10,12 @@ def auth_handler():
     return key, remember_device
 
 try:
-    vk = vk_api.VkApi(login = '89859639002', auth_handler = auth_handler)
+    login = raw_input("Input your email or number: ")
+    vk = vk_api.VkApi(login = login, auth_handler = auth_handler)
     vk.auth()
 except vk_api.exceptions.PasswordRequired:
     pswrd = raw_input("Please, input a password: ")
-    vk = vk_api.VkApi(login = '89859639002', password = pswrd, auth_handler = auth_handler)
+    vk = vk_api.VkApi(login = login, password = pswrd, auth_handler = auth_handler)
     vk.auth()
 
 
