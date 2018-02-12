@@ -119,8 +119,8 @@ def write_chat_msg(chat_id, s):
 
 domains = ['.ru', '.com', '.net', 'http', 'www', '.org']
 
-briefing_told = False
-notify = False
+
+NOTIFY = False
 
 # main loop
 print "Bot is working"
@@ -139,7 +139,7 @@ while True:
             VALUES['last_message_id'] = response['items'][0]['id']
         for item in response['items']:
             message_text = item[u'body'].lower()
-            if notify:
+            if NOTIFY:
                 msg_notify(item)      
             if message_text == u'#брифинг':
                 write_msg(item[u'user_id'], get_brief())
