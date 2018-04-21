@@ -1,8 +1,0 @@
-auth_handler	vk-bot.py	/^def auth_handler():$/;"	f
-vk	vk-bot.py	/^vk = vk_api.VkApi(login = '89859639002', auth_handler = auth_handler)$/;"	v
-day_toStr	vk-bot.py	/^day_toStr = {$/;"	v
-briefing	vk-bot.py	/^briefing = {$/;"	v
-getBrief	vk-bot.py	/^def getBrief():$/;"	f
-values	vk-bot.py	/^values = {'out':1,'count':3,'time_offset':15}$/;"	v
-write_msg	vk-bot.py	/^def write_msg(user_id, s):$/;"	f
-pidr_count	vk-bot.py	/^pidr_count = 0$/;"	v
