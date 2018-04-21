@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import time
+import fileparsing
 from subprocess import call
 import vk_api
 
@@ -81,10 +82,7 @@ def get_brief():
     top_week = (int(time.strftime("%W")) - 5)%2 # True(1) - Верхняя,False(0) - Нижняя
     hour = int(time.strftime("%H"))
     if weekday_now == 0 and hour > 15: 
-        if top_week:
-            top_week = 0
-        else:
-            top_week = 1     
+        top_week = 0 if (top_week == 1) else 1   
     if weekday_now == 6 and hour > 15:
         next_day = 'Sun'
     elif hour > 15:
@@ -129,8 +127,8 @@ while True:
     try:
         time.sleep(5)
         curr_time = time.strftime("%H:%M")
-        if curr_time == "21:00":
-            write_chat_msg(46,u"~Тестовый режим~\n"+get_brief())
+        if curr_time == "20:00":
+            write_chat_msg(46,u"~Тестовый режим, чесн~\n"+"Брифинг на завтра:\n"+fileparsing.getTT()) #get_brief())
             time.sleep(55)
         response = vk.method('messages.get', VALUES)
         if response['items']:
@@ -140,10 +138,11 @@ while True:
             if NOTIFY:
                 msg_notify(item)      
             if message_text == u'#брифинг':
-                write_msg(item[u'user_id'], get_brief())
+                write_msg(item[u'user_id'], "Брифинг на завтра:\n"+fileparsing.getTT())#get_brief())
             if item[u'user_id'] == 91114313 and is_link(message_text):
                 print "Got a link\nOpening...."
                 call(["firefox", message_text])
-    except Exception:
-        print "Oops...Catch an error\nFixing...\n"
+    except vk_api.exceptions.ApiHttpError:
+        print "Oops...Catch an error\nFixing..."
         vk.auth();
+        print "Bot is working"
