@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 import datetime
 DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
-def getTT():
+def get_timetable():
     tomorrow = datetime.date.today()+datetime.timedelta(days=1)
     timetable = open("timetable.txt", "r")
     found = False
@@ -25,4 +25,4 @@ def getTT():
 
 
 if __name__ == "__main__":
-    print getTT()
+    print get_timetable()
