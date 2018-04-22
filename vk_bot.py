@@ -25,20 +25,20 @@ def write_chat_msg(chat_id, s):
     vk.method('messages.send', {'chat_id':chat_id, 'message':s})
 
 # main loop
-print "Bot is working\n"
+print "Bot is working"
 
 VALUES = {'out': 1, 'count': 3, 'time_offset': 15} # настройки прочтения
 
 while True:
     try:
+        response = vk.method('messages.get', VALUES)
         time.sleep(15)
         curr_time = time.strftime("%H:%M")
         if curr_time == "20:00":
             write_chat_msg(46,"~Тестовый режим, чесн~\nБрифинг на завтра:\n"+fileparsing.get_timetable()) 
-            print "Timetable send\n"
-            print fileparsing.getTT() + "\n"
+            print "Timetable send"
+            print fileparsing.get_timetable()
             time.sleep(55)
-        response = vk.method('messages.get', VALUES)
         if response['items']:
             VALUES['last_message_id'] = response['items'][0]['id']
         for item in response['items']:
