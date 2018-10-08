@@ -27,24 +27,18 @@ def write_chat_msg(chat_id, s):
 # main loop
 print "Bot is working"
 
-VALUES = {'out': 1, 'count': 3, 'time_offset': 15} # настройки прочтения
+#response = vk.method('messages.getConversations', {'offset':0,'count':1,'filter':'all'})
+
 
 while True:
     try:
-        response = vk.method('messages.get', VALUES)
         time.sleep(15)
         curr_time = time.strftime("%H:%M")
         if curr_time == "20:00":
-            write_chat_msg(46,"~Тестовый режим, чесн~\nБрифинг на завтра:\n"+fileparsing.get_timetable()) 
-            print "Timetable send"
-            print fileparsing.get_timetable()
-            time.sleep(55)
-        if response['items']:
-            VALUES['last_message_id'] = response['items'][0]['id']
-        for item in response['items']:
-            message_text = item[u'body'].lower()     
-            if message_text == u'!брифинг':
-                write_msg(item[u'user_id'], "Брифинг на завтра:\n"+fileparsing.get_timetable())
+           write_chat_msg(61,"Брифинг на завтра:\n"+fileparsing.get_timetable()) 
+           print "Timetable send"
+           print fileparsing.get_timetable()
+           time.sleep(55) 
     except vk_api.exceptions.ApiHttpError:
         print "Oops...Catch an error\nFixing..."
         vk.auth(reauth=True)
